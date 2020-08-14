@@ -49,6 +49,7 @@ public class SimpleCarController : MonoBehaviour
     public void FixedUpdate()
     {
         float motor = maxMotorTorque * Input.GetAxis("Vertical");
+        Debug.Log("Vertical(Accelerate) : " + Input.GetAxis("Vertical"));
         float steering = maxSteeringAngle * (steering_wheel_rotator.GetComponent<Steering>().sum_angle) / 300f;
 
         foreach (AxleInfo axleInfo in axleInfos)
