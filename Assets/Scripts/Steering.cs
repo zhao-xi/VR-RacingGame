@@ -5,10 +5,11 @@ using UnityEngine;
 public class Steering : MonoBehaviour
 {
     //private float rotationSpeed = 400f;
+    private string actualState;
 
     public float sum_angle = 0f;
-    private void Update()
-    {
+    //private void Update()
+    //{
         //Debug.Log("Horizontal(Steering) : " + Input.GetAxis("Horizontal"));
         //if (Input.GetAxis("Horizontal") == 1 && sum_angle < 300)
         //{
@@ -37,13 +38,17 @@ public class Steering : MonoBehaviour
         //    }
         //}
 
-    }
+    //}
 
     Vector3 rotateAngle;
 
-    private void FixedUpdate()
+    private void Update()
     {
-        rotateAngle = new Vector3(0f, 300 * Input.GetAxis("Horizontal"), 0f);
+        LogitechGSDK.DIJOYSTATE2ENGINES rec;
+        rec = LogitechGSDK.LogiGetStateUnity(0);
+        float steering = (float)rec.lX / 32768f;
+        Debug.Log(steering);
+        rotateAngle = new Vector3(0f, 300 * steering, 0f);
         transform.localEulerAngles = rotateAngle;
         sum_angle = rotateAngle.y;
     }

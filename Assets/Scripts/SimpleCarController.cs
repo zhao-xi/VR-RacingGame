@@ -46,19 +46,33 @@ public class SimpleCarController : MonoBehaviour
         visualWheel.transform.rotation = rotation;
     }
 
+    float Brakes = 0;
+    float acc = 0;
     public void FixedUpdate()
     {
-        float motor = maxMotorTorque * Input.GetAxis("Vertical");
-        Debug.Log("Vertical(Accelerate) : " + Input.GetAxis("Vertical"));
+        LogitechGSDK.DIJOYSTATE2ENGINES rec;
+        rec = LogitechGSDK.LogiGetStateUnity(0);
+        acc = -(float)rec.lY / 32768f;
+
+        float motor = maxMotorTorque * Mathf.Max(acc, 0);
         float steering = maxSteeringAngle * (steering_wheel_rotator.GetComponent<Steering>().sum_angle) / 300f;
+
+        
+        Brakes = 0;
+        if (acc < 0)
+        {
+            Brakes = -5000 * acc;
+        }
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
             if (axleInfo.steering)
             {
                 axleInfo.leftWheel.steerAngle = steering;
+                axleInfo.leftWheel.brakeTorque = Brakes;
                 wheel_fl.transform.localEulerAngles = new Vector3(wheel_fl.transform.localEulerAngles.x, -steering, wheel_fl.transform.localEulerAngles.z);
                 axleInfo.rightWheel.steerAngle = steering;
+                axleInfo.rightWheel.brakeTorque = Brakes;
                 wheel_fr.transform.localEulerAngles = new Vector3(wheel_fr.transform.localEulerAngles.x, -steering, wheel_fr.transform.localEulerAngles.z);
             }
             if (axleInfo.motor)
